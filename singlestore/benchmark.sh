@@ -26,10 +26,10 @@
 # pigz -d -f hits.tsv.gz
 # sudo docker cp hits.tsv memsql-ciab:/
 #
-mysql -h 127.0.0.1 -u root -e "CREATE DATABASE test"
+# mysql -h 127.0.0.1 -u root -e "CREATE DATABASE test"
 mysql -h 127.0.0.1 -u root --database=test -e "USE test; $(cat create.sql)"
 echo -n "Load time: "
-command time -f '%e' mysql -h 127.0.0.1  -vvv -u root --database=test -e "SET sql_log_bin = 0; LOAD DATA INFILE '/hits.tsv' INTO TABLE test.hits"
+command time -f '%e' mysql --local-infile -h 127.0.0.1  -vvv -u root --database=test -e "LOAD DATA LOCAL INFILE 'hits.tsv' INTO TABLE test.hits MAX_ERRORS 0"
 
 # Query OK, 99997497 rows affected (11 min 30.11 sec)
 

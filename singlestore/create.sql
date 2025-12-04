@@ -1,5 +1,5 @@
-set global collation_database='utf8_bin';
-set collation_database='utf8_bin';
+set global collation_database='utf8mb4_bin';
+set collation_database='utf8mb4_bin';
 
 CREATE TABLE hits
 (

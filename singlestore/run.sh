@@ -1,6 +1,7 @@
 #!/bin/bash
 
 TRIES=3
+OUTPUT=""
 
 cat queries.sql | while read -r query; do
     sync
@@ -9,8 +10,10 @@ cat queries.sql | while read -r query; do
     mysql -h 127.0.0.1 -u root -vvv --database=test -e "USE test; ${query}"
 
     # to get the most accurate 'hot' query results, wait for async compilations to finish to ensure we have a compiled plan
-    while [[ $( mysql -h 127.0.0.1 -u root -vvv --database=test -e 'select sum(variable_value) v from information_schema.mv_global_status where variable_name = "Inflight_async_compilations" having v != 0') ]]; do
+    while [[ "$OUTPUT" != *"Inflight_async_compilations | 0"* ]]; do
         sleep 1
+        OUTPUT=$( mysql -h 127.0.0.1 -u root -vvv --database=test -e "show status like 'Inflight_async_compilations'")
+        echo "sleeping"
     done
 
     for i in $(seq 2 $TRIES); do
