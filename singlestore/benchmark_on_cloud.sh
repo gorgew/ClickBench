@@ -1,13 +1,13 @@
 #!/bin/bash
 
-export ENDPOINT="..."
-export MYSQL_PWD="..."
+export ENDPOINT="127.0.0.1"
+# export MYSQL_PWD="..."
 
-mysql -h$ENDPOINT -uadmin --default-auth=mysql_native_password -P 3306 -e "create database test"
-mysql -h$ENDPOINT -uadmin --default-auth=mysql_native_password -P 3306 --database=test -e "$(cat create.sql)"
-mysql -h$ENDPOINT -uadmin --default-auth=mysql_native_password -P 3306 --database=test -e "create pipeline h as load data s3 'clickhouse-public-datasets/hits_compatible/hits.tsv.gz' config '{\"region\":\"us-east-1\"}' into table hits;"
+mysql -h$ENDPOINT -u root -P 3306 -e "create database test"
+mysql -h$ENDPOINT -u root -P 3306 test -e "$(cat create.sql)"
+mysql -h$ENDPOINT -u root -P 3306 test -e "create pipeline h as load data s3 'clickhouse-public-datasets/hits_compatible/hits.tsv.gz' config '{\"region\":\"us-east-1\"}' into table hits;"
 echo -n "Load time: "
-command time -f '%e' mysql -h$ENDPOINT -uadmin --default-auth=mysql_native_password -P 3306 --database=test -e "start pipeline h foreground"
+command time -f '%e' mysql -h$ENDPOINT -u root --default-auth=mysql_native_password -P 3306 --database=test -e "start pipeline h foreground"
 
 ./run_on_cloud.sh 2>&1 | tee log.txt
 
