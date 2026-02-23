@@ -1,5 +1,8 @@
 #!/bin/bash -e
 
+MEMSQL_PID="$1"
+FREQ=${2:-"99"}
+
 # Install
 
 # sudo apt-get update -y
@@ -27,13 +30,15 @@
 # sudo docker cp hits.tsv memsql-ciab:/
 #
 # mysql -h 127.0.0.1 -u root -e "CREATE DATABASE test"
-mysql -h 127.0.0.1 -u root --database=test -e "USE test; $(cat create.sql)"
-echo -n "Load time: "
-command time -f '%e' mysql --local-infile -h 127.0.0.1  -vvv -u root --database=test -e "LOAD DATA LOCAL INFILE 'hits.tsv' INTO TABLE test.hits MAX_ERRORS 0"
+# mysql -h 127.0.0.1 -u root --database=test -e "USE test; $(cat create.sql)"
+# echo -n "Load time: "
+# command time -f '%e' mysql --local-infile -h 127.0.0.1  -vvv -u root --database=test -e "LOAD DATA LOCAL INFILE 'hits.tsv' INTO TABLE test.hits MAX_ERRORS 0"
 
 # Query OK, 99997497 rows affected (11 min 30.11 sec)
 
-./run.sh 2>&1 | tee log.txt
+mkdir -p perf_results
+
+./run.sh $MEMSQL_PID $FREQ 2>&1 | tee log.txt
 
 echo -n "Data size: "
 du -bcs ~/memsql/ll20/memsqlbin | grep total
