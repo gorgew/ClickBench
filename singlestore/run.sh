@@ -14,7 +14,7 @@ cat queries.sql | while read -r query; do
     sync
     echo 3 | sudo tee /proc/sys/vm/drop_caches
 
-    perf record -p "${MEMSQL_PID}" -F $FREQ -g --call-graph "dwarf" -o "perf_results/query_${QUERY_NUMBER}_perf.data" &
+    perf record -p "${MEMSQL_PID}" -F $FREQ -g -o "perf_results/query_${QUERY_NUMBER}_perf.data" &
     mysql -h 127.0.0.1 -u root -vvv --database=test -e "USE test; ${query}"
 
     # to get the most accurate 'hot' query results, wait for async compilations to finish to ensure we have a compiled plan
